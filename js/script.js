@@ -112,3 +112,13 @@ function az() {
     }, (t + 2) * 1000);
   }
 }
+
+
+// Récupération du bouton Reset
+let resetButton = document.querySelector('#Reset');
+
+// Événement de clic sur le bouton Reset
+resetButton.addEventListener("click", function () {
+  // Recharger la page
+  location.reload();
+});
