@@ -9,9 +9,11 @@ let s = true; // Indicateur de démarrage de l'ascenseur
 // Récupération des éléments DOM
 const porte1 = document.getElementById('porte1');
 const porte2 = document.getElementById('porte2');
+
 const elevator = document.querySelector('.Elevator');
 const cadre = document.querySelector('.cadre');
 let nbr = document.querySelector('#nbr');
+let buttonsClicked = [];
 
 // Fonction pour ouvrir les portes de l'ascenseur
 function ouvrirPortes() {
@@ -51,64 +53,54 @@ function fermerPortes() {
   });
 }
 
-
-
-
 // Fonction pour déplacer l'ascenseur à une position donnée
-function moveElevator(currentFloor, targetFloor) {
-  const floorHeight = 20; // Hauteur d'un étage en pourcentage
-  const distance = Math.abs(targetFloor - currentFloor) * floorHeight; // Distance à parcourir
-
-  // Calcul de la durée de l'animation en fonction de la distance
-  const animationDuration = distance * 1000 / 20; // 20% d'un étage par seconde
-
-  // Animation du déplacement de l'ascenseur
-  elevator.animate([
-    { bottom: `calc(${currentFloor * floorHeight}% + 15px)` },
-    { bottom: `calc(${targetFloor * floorHeight}% + 15px)` }
+function move() {
+  let Elevator = document.querySelector('.Elevator');
+  Elevator.animate([
+    { bottom: `calc(${i}% + 15px)` },
+    { bottom: `calc(${d[0]}% + 15px)` }
   ], {
-    duration: animationDuration,
+    duration: (t + 0) * 1000,
     fill: "forwards"
   });
 }
 
 // Événement de clic sur les boutons des étages
-document.addEventListener("DOMContentLoaded", function() {
-  let startButton = document.querySelector('#Start');
-  startButton.addEventListener("click", function(event) {
-    // Accéder au bouton de démarrage
-    let clickedStartButton = event.target;
-    // Exécuter le reste du code ici
-    s = true;
-    az();
-    clickedStartButton.disabled = true; // Désactiver le bouton de démarrage après avoir cliqué dessus
+let btnR = document.querySelectorAll('.btnR');
+btnR.forEach((e, i) => {
+  e.addEventListener("click", function () {
+    cadre.textContent += 'R' + i;
+    d.push(i * 20); // Ajout de l'étage demandé dans le tableau d[]
+    if (is_move == false) {
+      az();
+    }
   });
 });
 
 // Événement de clic sur le bouton de démarrage de l'ascenseur
 let Start = document.querySelector('#Start');
-Start.addEventListener("click", function () {
+Start.onclick = function () {
   s = true;
   az();
   Start.disabled = true;
-});
+};
 
 // Fonction pour déplacer l'ascenseur vers les étages demandés
 function az() {
   if (s) {
     is_move = true;
-    const targetFloor = d[0] / 20; // Étage cible en pourcentage
-    const currentFloor = i / 20; // Étage actuel en pourcentage
-    t = Math.abs(targetFloor - currentFloor) / 10; // Calcul du temps de déplacement entre les étages
+    t = (d[0] - i) / 10; // Calcul du temps de déplacement entre les étages
+    t = t > 0 ? t : t * (-1);
     fermerPortes(); // Fermeture des portes de l'ascenseur
     setTimeout(() => {
-      moveElevator(currentFloor, targetFloor); // Déplacement de l'ascenseur vers l'étage demandé
+      move(); // Déplacement de l'ascenseur vers l'étage demandé
     }, 2000);
     setTimeout(() => {
       ouvrirPortes(); // Ouverture des portes de l'ascenseur
-      const distance = Math.abs(d[0] - i);
-      n_les_tage += distance / 20; // Calcul du nombre total d'étages parcourus
-      nbr.textContent = n_les_tage;
+      let x=(d[0] - i)
+        x=x>0?x:x*(-1)
+        n_les_tage +=x / 20; // Calcul du nombre total d'étages parcourus
+        nbr.textContent = n_les_tage;
       setTimeout(() => {
         i = d[0]; // Mise à jour de l'étage actuel de l'ascenseur
         d.shift(); // Suppression de l'étage demandé du tableau d[]
@@ -118,21 +110,5 @@ function az() {
         }
       }, 5000);
     }, (t + 2) * 1000);
-    
   }
-  
 }
-
-
-
-
-// Récupération du bouton Reset
-let resetButton = document.querySelector('#Reset');
-
-// Événement de clic sur le bouton Reset
-resetButton.addEventListener("click", function () {
-  // Recharger la page
-  location.reload();
-});
-
-
